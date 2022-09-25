@@ -1,4 +1,4 @@
-package org.acme;
+package meetup.sydney.java;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

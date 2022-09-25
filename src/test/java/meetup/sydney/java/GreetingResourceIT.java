@@ -1,4 +1,4 @@
-package org.acme;
+package meetup.sydney.java;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
