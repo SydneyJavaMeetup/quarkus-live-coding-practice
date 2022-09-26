@@ -40,7 +40,7 @@
         Link,
         Paper,
         Grid,
-        Button
+        Button,
     } = MaterialUI;
 
     // Create a theme instance.
@@ -66,13 +66,17 @@
                     {`${name} Team Area`}
                 </Typography>
                 <Typography>{`Current score: ${score}`}</Typography>
-                <Button variant={"outlined"} sx={{color: "black"}} onClick={vote}>Vote</Button>
+                <Button variant={"outlined"} sx={{color: "black"}} onClick={()=>vote(1)}>Vote</Button>
+                <Button variant={"outlined"} sx={{color: "black"}} onClick={()=>vote(100)}>Vote 100</Button>
+                <Button variant={"outlined"} sx={{color: "black"}} onClick={()=>vote(1000)}>Vote 1000</Button>
             </Paper>
         );
     }
 
     function App() {
         // let theme = React.useTheme();
+        const [connection, setConnection] = React.useState(false);
+
         const [dogScore, setDogScore] = React.useState(0);
         const [catScore, setCatScore] = React.useState(0);
         //randomly choose between cat and dog teams
@@ -80,22 +84,50 @@
         //get the current domain
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const domain = window.location.host;
-        const ws = new WebSocket(`${protocol}//${domain}/pet-race`);
-        ws.onopen = event=>{
-            console.log("WebSocket is open now.");
-            ws.send(`team:${team}`)
-        }
 
-        ws.onmessage = event=>{
-            if (event.indexOf("dog") > -1) {
-                setDogScore(event.split(":")[1]);
-            } else if (event.indexOf("cat") > -1) {
-                setCatScore(event.split(":")[1]);
+        function connect() {
+            const ws = new WebSocket(`${protocol}//${domain}/pet-race`);
+
+            ws.onopen = event => {
+                console.log("WebSocket is open now.");
+                // ws.send(`team:${team}`)
+                setConnection(ws)
+            }
+
+            ws.onclose = event => {
+                console.log("WebSocket is closed now.");
+                setConnection(null)
+            }
+
+            ws.onmessage = wsEvent => {
+                const event = wsEvent.data;
+                // console.log(event);
+                if (event.indexOf("dog") > -1) {
+                    setDogScore(event.split(":")[1]);
+                } else if (event.indexOf("cat") > -1) {
+                    setCatScore(event.split(":")[1]);
+                }
             }
         }
 
-        function vote(team) {
-            ws.send('vote:'+team)
+        React.useEffect(()=> {
+            connect();
+        }, []);
+
+        function disconnect() {
+            if (connection) {
+                connection.close();
+            } else {
+                console.log(`ws was not defined`)
+            }
+        }
+
+        function vote(team, count) {
+            if (connection) {
+                for (let i = 0; i < count; i++) {
+                    connection.send('vote:' + team)
+                }
+            }
         }
 
         return (
@@ -104,15 +136,24 @@
                     <Typography variant="h4" component="h1" gutterBottom>
                         Welcome to Pet Race!
                     </Typography>
+
                     <Typography variant="h5" component="h1" gutterBottom>
                         You're on team {team}
                     </Typography>
                     <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                            <TeamArea name="Dog" color={theme.palette.primary.main} score={dogScore} vote={()=>vote('dog')}/>
+                        <Grid item xs={12}>
+                            {connection && <Button variant="outlined" onClick={disconnect}>
+                                Disconnect
+                            </Button>}
+                            {!connection && <Button variant="contained" onClick={connect}>
+                                Connect
+                            </Button>}
                         </Grid>
                         <Grid item xs={6}>
-                            <TeamArea name="Cat" color={theme.palette.secondary.main} score={catScore} vote={()=>vote('cat')}/>
+                            <TeamArea name="Dog" color={theme.palette.primary.main} score={dogScore} vote={(count)=>vote('dog', count)}/>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TeamArea name="Cat" color={theme.palette.secondary.main} score={catScore} vote={(count)=>vote('cat', count)}/>
                         </Grid>
                     </Grid>
                 </Box>
