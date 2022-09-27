@@ -82,10 +82,10 @@ Resources:
       CapacityProviderStrategy:
         - CapacityProvider: FARGATE_SPOT
           Base: 0
-          Weight: 0
+          Weight: 1
         - CapacityProvider: FARGATE
           Base: 0
-          Weight: 1
+          Weight: 0
       DeploymentConfiguration:
         MinimumHealthyPercent: 100
         MaximumPercent: 200
@@ -94,8 +94,8 @@ Resources:
           Rollback: true
       DesiredCount: 1
       NetworkConfiguration:
-        AwsvpcConfiguration:
-          AssignPublicIp: DISABLED
+        AwsVpcConfiguration:
+          AssignPublicIp: ENABLED
           Subnets:
             - !Ref Subnet1
             - !Ref Subnet2
