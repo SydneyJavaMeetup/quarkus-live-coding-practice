@@ -11,9 +11,10 @@ aws cloudformation deploy \
       RepositoryTag="${REPOSITORY_TAG}" \
       ClusterName="quarkus" \
       Subnet1="${SUBNET1}" \
-#      Subnet2="${SUBNET2}" \
       ContainerSecurityGroup="${CONTAINER_SECURITY_GROUP}" \
       TaskRoleArn="${TASK_ROLE_ARN}" \
       ConnectionStringSecretArn="${CONNECTION_STRING_SECRET_ARN}"
+
+#      Subnet2="${SUBNET2}" \
 
 echo "$(date): Done."
