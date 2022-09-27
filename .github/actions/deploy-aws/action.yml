@@ -63,10 +63,10 @@ runs:
         REPOSITORY_TAG="${REPOSITORY_URL}/${REPOSITORY_NAME}:${REPOSITORY_VERSION}"
         REPOSITORY_TAG_LATEST="${REPOSITORY_URL}/${REPOSITORY_NAME}:latest"
         
-        echo "$(date): Building for arm and amd64 and pushing tags:"
+        echo "$(date): Building for arm (not alternative architecture linux/amd64) and pushing tags:"
         echo " ->${REPOSITORY_TAG}"
         echo " ->${REPOSITORY_TAG_LATEST}..."
-        docker buildx build --push -f "$(pwd)/src/main/docker/Dockerfile.jvm" -t "${REPOSITORY_TAG}" -t "${REPOSITORY_TAG_LATEST}" --platform linux/amd64,linux/arm64 .
+        docker buildx build --push -f "$(pwd)/src/main/docker/Dockerfile.jvm" -t "${REPOSITORY_TAG}" -t "${REPOSITORY_TAG_LATEST}" --platform linux/arm64 .
         echo "$(date): Done."
         
         echo "::set-output name=tag::$(echo $REPOSITORY_TAG)"
@@ -86,7 +86,6 @@ runs:
         cd "${{ github.action_path }}"
         ./ecs.sh
       shell: bash
-
 
 
 #USAGE
