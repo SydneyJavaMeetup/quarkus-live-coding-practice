@@ -41,6 +41,7 @@
         Paper,
         Grid,
         Button,
+        Stack
     } = MaterialUI;
 
     // Create a theme instance.
@@ -62,13 +63,13 @@
         let {name, color, score, vote} = props;
         return (
             <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', height: 240, backgroundColor: color }}>
+                <Stack spacing={2}>
                 <Typography variant="h6" component="div">
                     {`${name} Team Area`}
                 </Typography>
                 <Typography>{`Current score: ${score}`}</Typography>
-                <Button variant={"outlined"} sx={{color: "black"}} onClick={()=>vote(1)}>Vote</Button>
-                <Button variant={"outlined"} sx={{color: "black"}} onClick={()=>vote(100)}>Vote 100</Button>
-                <Button variant={"outlined"} sx={{color: "black"}} onClick={()=>vote(1000)}>Vote 1000</Button>
+                <Button variant={"outlined"} sx={{backgroundColor: "white", color: "black"}} onClick={()=>vote(1)}>Vote {name}</Button>
+                </Stack>
             </Paper>
         );
     }
