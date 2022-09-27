@@ -19,11 +19,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.7.0
-        with:
-          mongodb-version: 5.0
-          mongodb-replica-set: test-rs
 
       - name: Build + Test Java
         run: ./mvnw package
