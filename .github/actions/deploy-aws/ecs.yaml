@@ -94,7 +94,7 @@ Resources:
           Rollback: true
       DesiredCount: 1
       NetworkConfiguration:
-        AwsVpcConfiguration:
+        AwsvpcConfiguration:
           AssignPublicIp: ENABLED
           Subnets:
             - !Ref Subnet1
