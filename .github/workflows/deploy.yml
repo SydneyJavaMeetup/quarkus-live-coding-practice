@@ -48,3 +48,4 @@ jobs:
           subnet2: "subnet-06f811b0c1ce1f519"
           container-security-group: "sg-097cfa8a09ed1ba50"
           task-role-arn: "arn:aws:iam::${{ secrets.LUKE_ACCOUNT_ID }}:role/quarkus-dev-ecs-task-role"
+          connection-string-secret-arn: ${{ secrets.LUKE_ATLAS_CONNECTION_STRING_SECRET_ARN}}

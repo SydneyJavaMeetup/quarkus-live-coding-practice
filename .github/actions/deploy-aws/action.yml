@@ -30,6 +30,9 @@ inputs:
   task-role-arn:
     description: 'The ARN of the role which the container shall use to access AWS services'
     required: true
+  connection-string-secret-arn:
+    description: 'The ARN of the secret containing the connection string for the database'
+    required: true
 outputs:
   repository-tag:
     description: "The repository tag that was deployed"
@@ -78,7 +81,7 @@ runs:
         SUBNET2: ${{ inputs.subnet2 }}
         CONTAINER_SECURITY_GROUP: ${{ inputs.container-security-group }}
         TASK_ROLE_ARN: ${{ inputs.task-role-arn }}
-        CONNECTION_STRING_SECRET_ARN: ${{ secrets.LUKE_ATLAS_CONNECTION_STRING_SECRET_ARN}}
+        CONNECTION_STRING_SECRET_ARN: ${{ inputs.connection-string-secret-arn }}
       run: |
         cd "${{ github.action_path }}"
         ./ecs.sh
