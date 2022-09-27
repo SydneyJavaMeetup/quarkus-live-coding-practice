@@ -1,0 +1,103 @@
+Description: A CloudFormation template for which creates an ECS service and updates it with new task container images when updated.
+Parameters:
+  ClusterName:
+    Type: String
+    Description: The name of the cluster.
+  RepositoryTag:
+    Type: String
+    Description: The repository tag that was deployed.
+  Subnet1:
+    Type: AWS::EC2::Subnet::Id
+  Subnet2:
+    Type: AWS::EC2::Subnet::Id
+  ContainerSecurityGroup:
+    Type: String
+  TaskRoleArn:
+    Type: String
+    Description: The arn of the role which the task will have to permit the container to access AWS services.
+  ConnectionStringSecretArn:
+    Type: String
+    Description: The arn of the SSM parameter store secret which contains the connection string for the database.
+
+Resources:
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ClusterName
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+        - Environment:
+            - Name: HTTP_PORT
+              Value: "8080"
+            - Name: REGION
+              Value: !Ref "AWS::Region"
+          HealthCheck:
+            Command:
+              - "CMD-SHELL"
+              - "curl --silent --fail --output /dev/null http://localhost:8080/q/health || exit 1"
+            Interval: 5
+            Retries: 3
+            StartPeriod: 30
+            Timeout: 30
+          Image: !Ref RepositoryTag
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              "awslogs-group": "/ecs/quarkus"
+              "awslogs-region": !Ref "AWS::Region"
+              "awslogs-stream-prefix": "ecs"
+              "awslogs-create-group": "true"
+          Name: quarkus
+          PortMappings:
+            - ContainerPort: 8080
+              HostPort: 8080
+              Protocol: tcp
+          Secrets:
+            - Name: CONNECTION_STRING
+              ValueFrom: !Ref ConnectionStringSecretArn
+
+      Cpu: 256
+      Memory: 512
+
+      ExecutionRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/ecsTaskExecutionRole"
+      TaskRoleArn: !Ref TaskRoleArn
+      Family: quarkus
+      NetworkMode: awsvpc
+      PlacementConstraints: []
+      RequiresCompatibilities:
+        - FARGATE
+      RuntimePlatform:
+        CpuArchitecture: ARM64
+        OperatingSystemFamily: LINUX
+      Volumes: []
+
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref Cluster
+      ServiceName: quarkus
+      TaskDefinition: !Ref TaskDefinition
+      CapacityProviderStrategy:
+        - CapacityProvider: FARGATE_SPOT
+          Base: 0
+          Weight: 1
+        - CapacityProvider: FARGATE
+          Base: 0
+          Weight: 0
+      DeploymentConfiguration:
+        MinimumHealthyPercent: 100
+        MaximumPercent: 200
+        DeploymentCircuitBreaker:
+          Enable: true
+          Rollback: true
+      DesiredCount: 1
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets:
+            - !Ref Subnet1
+            - !Ref Subnet2
+          SecurityGroups:
+            - !Ref ContainerSecurityGroup

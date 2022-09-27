@@ -1,0 +1,50 @@
+name: Deploy Quarkus
+concurrency: deploy
+on:
+  push:
+    paths:
+      - '.github/workflows/deploy.yml'
+      - 'src/**'
+      - 'pom.xml'
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.7.0
+        with:
+          mongodb-version: 5.0
+          mongodb-replica-set: test-rs
+
+      - name: Build + Test Java
+        run: ./mvnw package
+
+      - name: Create a unique version for tagging the docker image with
+        env:
+          GITHUB_BRANCH: ${{ github.ref }}
+        run: |
+          export PUBLISH_DATE=`date +%Y-%d-%m`
+          export VERSION="${GITHUB_BRANCH##*/}-${PUBLISH_DATE}-$GITHUB_RUN_NUMBER"
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
+      - name: Deploy to AWS (Dev)
+        uses: ./.github/actions/deploy-aws/
+        with:
+          aws_access_key: ${{ secrets.LUKE_AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.LUKE_AWS_SECRET_ACCESS_KEY }}
+          repository-url: ${{ secrets.LUKE_ACCOUNT_ID }}.dkr.ecr.ap-southeast-2.amazonaws.com
+          version: ${{ env.VERSION }}
+          region: ap-southeast-2
+          subnet1: "subnet-0504f7141af7202d3"
+          subnet2: "subnet-06f811b0c1ce1f519"
+          container-security-group: "sg-097cfa8a09ed1ba50"
+          task-role-arn: "arn:aws:iam::${{ secrets.LUKE_ACCOUNT_ID }}:role/quarkus-dev-ecs-task-role"

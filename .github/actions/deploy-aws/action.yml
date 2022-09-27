@@ -1,0 +1,97 @@
+# Composite action:
+# Ref: https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+name: 'Deploy to AWS'
+description: 'Build an arm docker image and deploy it to an ECS Service'
+inputs:
+  aws_access_key:
+    description: 'AWS Access Key'
+    required: true
+  aws_secret_key:
+    description: 'AWS Secret Key'
+    required: true
+  repository-url:
+    description: 'The URL of the repository'
+    required: true
+  version:
+    description: 'The version section of the tag of this docker build'
+    required: true
+  region:
+    description: 'The URL of the repository'
+    required: true
+  subnet1:
+    description: 'The first subnet of the VPC in which tasks may be launched'
+    required: true
+  subnet2:
+    description: 'The second subnet of the VPC in which tasks may be launched'
+    required: true
+  container-security-group:
+    description: 'The security group of container in the ECS cluster'
+    required: true
+  task-role-arn:
+    description: 'The ARN of the role which the container shall use to access AWS services'
+    required: true
+outputs:
+  repository-tag:
+    description: "The repository tag that was deployed"
+    value: ${{ steps.buildx.outputs.tag }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - id: buildx
+      name: Push to ECR
+      shell: bash
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+        AWS_REGION: ${{ inputs.region }}
+        REPOSITORY_URL: ${{ inputs.repository-url }}
+        REPOSITORY_NAME: quarkus
+        REPOSITORY_VERSION: ${{ inputs.version }}
+      run: |
+        aws ecr get-login-password --region "${AWS_REGION}" | docker login --username AWS --password-stdin "${REPOSITORY_URL}"
+        
+        REPOSITORY_TAG="${REPOSITORY_URL}/${REPOSITORY_NAME}:${REPOSITORY_VERSION}"
+        REPOSITORY_TAG_LATEST="${REPOSITORY_URL}/${REPOSITORY_NAME}:latest"
+        
+        echo "$(date): Building for arm (not alternative architecture linux/amd64) and pushing tags:"
+        echo " ->${REPOSITORY_TAG}"
+        echo " ->${REPOSITORY_TAG_LATEST}..."
+        docker buildx build --push -f "$(pwd)/src/main/docker/Dockerfile.jvm" -t "${REPOSITORY_TAG}" -t "${REPOSITORY_TAG_LATEST}" --platform linux/arm64 .
+        echo "$(date): Done."
+        
+        echo "::set-output name=tag::$(echo $REPOSITORY_TAG)"
+        echo "REPOSITORY_TAG=${REPOSITORY_TAG}" >> $GITHUB_ENV
+
+    - name: Deploy to ECS
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
+        AWS_REGION: ${{ inputs.region }}
+        SUBNET1: ${{ inputs.subnet1 }}
+        SUBNET2: ${{ inputs.subnet2 }}
+        CONTAINER_SECURITY_GROUP: ${{ inputs.container-security-group }}
+        TASK_ROLE_ARN: ${{ inputs.task-role-arn }}
+        CONNECTION_STRING_SECRET_ARN: ${{ secrets.LUKE_ATLAS_CONNECTION_STRING_SECRET_ARN}}
+      run: |
+        cd "${{ github.action_path }}"
+        ./ecs.sh
+      shell: bash
+
+
+#USAGE
+#        - name: Deploy to AWS (Dev)
+#          uses: ./.github/actions/deploy-aws/
+#          with:
+#            aws_access_key: ${{ secrets.DOCKER_AWS_ACCESS_KEY_ID }}
+#            aws_secret_key: ${{ secrets.DOCKER_AWS_SECRET_ACCESS_KEY }}
+#            repository-url: [account].dkr.ecr.[region].amazonaws.com
+#            version: ${VERSION}
+#            region: [region]
+
