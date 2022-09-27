@@ -3,7 +3,7 @@ concurrency: deploy
 on:
   push:
     paths:
-      - '.github/workflows/deploy.yml'
+      - '.github/*'
       - 'src/**'
       - 'pom.xml'
     branches:
