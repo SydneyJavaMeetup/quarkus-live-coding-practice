@@ -21,9 +21,9 @@ inputs:
   subnet1:
     description: 'The first subnet of the VPC in which tasks may be launched'
     required: true
-  subnet2:
-    description: 'The second subnet of the VPC in which tasks may be launched'
-    required: true
+#  subnet2:
+#    description: 'The second subnet of the VPC in which tasks may be launched'
+#    required: true
   container-security-group:
     description: 'The security group of container in the ECS cluster'
     required: true
@@ -78,7 +78,7 @@ runs:
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_key }}
         AWS_REGION: ${{ inputs.region }}
         SUBNET1: ${{ inputs.subnet1 }}
-        SUBNET2: ${{ inputs.subnet2 }}
+#        SUBNET2: ${{ inputs.subnet2 }}
         CONTAINER_SECURITY_GROUP: ${{ inputs.container-security-group }}
         TASK_ROLE_ARN: ${{ inputs.task-role-arn }}
         CONNECTION_STRING_SECRET_ARN: ${{ inputs.connection-string-secret-arn }}

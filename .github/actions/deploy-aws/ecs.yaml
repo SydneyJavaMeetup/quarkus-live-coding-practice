@@ -8,8 +8,8 @@ Parameters:
     Description: The repository tag that was deployed.
   Subnet1:
     Type: AWS::EC2::Subnet::Id
-  Subnet2:
-    Type: AWS::EC2::Subnet::Id
+#  Subnet2:
+#    Type: AWS::EC2::Subnet::Id
   ContainerSecurityGroup:
     Type: String
   TaskRoleArn:
@@ -98,6 +98,6 @@ Resources:
           AssignPublicIp: ENABLED
           Subnets:
             - !Ref Subnet1
-            - !Ref Subnet2
+#            - !Ref Subnet2
           SecurityGroups:
             - !Ref ContainerSecurityGroup
