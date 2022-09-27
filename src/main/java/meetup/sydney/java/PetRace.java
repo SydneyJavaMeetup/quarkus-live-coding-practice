@@ -82,6 +82,10 @@ public class PetRace {
         sessions.values().forEach(s -> {
             s.getAsyncRemote().sendObject(message, result ->  {
                 if (result.getException() != null) {
+                    if (result.getException().toString() == "io.netty.channel.StacklessClosedChannelException") {
+                        System.out.println("Error sending message to closed socket, removing from list of sockets: " + s.getId());
+                        sessions.remove(s.getId());
+                    }
                     System.out.println("Unable to send message: " + result.getException());
                 }
             });

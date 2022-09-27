@@ -2,11 +2,14 @@ package meetup.sydney.java;
 
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.changestream.FullDocument;
+import com.mongodb.client.result.UpdateResult;
 import io.quarkus.mongodb.ChangeStreamOptions;
 import io.quarkus.mongodb.reactive.ReactiveMongoClient;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
+import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.subscription.Cancellable;
+import io.smallrye.mutiny.tuples.Tuple2;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -31,11 +34,18 @@ public class ChangeStreamWatcher {
         var options = new ChangeStreamOptions()
                 .fullDocument(FullDocument.UPDATE_LOOKUP);
 
-        reactiveMongoClient
+        Uni<UpdateResult> initCat = reactiveMongoClient
                 .getDatabase("SydneyJava")
                 .getCollection("petRace", PetVote.class)
-                .updateOne(eq("_id", "init"), set("votes", 0), new UpdateOptions().upsert(true))
-                .subscribe()
+                .updateOne(eq("_id", "cat"), set("votes", 0), new UpdateOptions().upsert(true));
+        Uni<UpdateResult> initDog = reactiveMongoClient
+                .getDatabase("SydneyJava")
+                .getCollection("petRace", PetVote.class)
+                .updateOne(eq("_id", "dog"), set("votes", 0), new UpdateOptions().upsert(true));
+
+        Uni<Tuple2<UpdateResult, UpdateResult>> init = Uni.combine().all().unis(initCat, initDog).asTuple();
+
+        init.subscribe()
                 .with(updateResult -> {
                     System.out.println("Initialised collection");
                     cancellableChangeStreamSubscription =
