@@ -24,6 +24,9 @@ Resources:
     Type: AWS::ECS::Cluster
     Properties:
       ClusterName: !Ref ClusterName
+      CapacityProviders:
+        - FARGATE
+        - FARGATE_SPOT
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
