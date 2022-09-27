@@ -36,7 +36,7 @@ jobs:
         with:
           aws_access_key: ${{ secrets.LUKE_AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.LUKE_AWS_SECRET_ACCESS_KEY }}
-          repository-url: ${{ secrets.LUKE_ACCOUNT_ID }}.dkr.ecr.ap-southeast-2.amazonaws.com
+          repository-url: "${{ secrets.LUKE_ACCOUNT_ID }}.dkr.ecr.ap-southeast-2.amazonaws.com"
           version: ${{ env.VERSION }}
           region: ap-southeast-2
           subnet1: "subnet-0504f7141af7202d3"
