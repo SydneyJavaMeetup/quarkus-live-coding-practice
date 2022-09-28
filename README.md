@@ -1,56 +1,45 @@
-# code-with-quarkus Project
+# Quarkus Meetup
+#sydneyjava
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+### Program
+6pm - Networking/Drinks/Food.  
+6:30pm - Event Intro and Job Shouts.  
+6:35pm - Miguel Yap (Pet Circle) speaking about utilising Java to build cloud functions on GCP.  
+7:00pm - break.  
+7.10pm - Exploring Quarkus + MongoDB (Live-Coding) 8pm Event Finish.  
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+### Intro
+Ethos, vibe
+- openness
+- inclusiveness
+- no experts, we're a community of peers rather than a mixture of experts and novices
 
-## Running the application in dev mode
+### Job Shouts
+“Before we get into the tech talks, are there any job shoutouts?”
 
-You can run your application in dev mode that enables live coding using:
-```shell script
-./mvnw compile quarkus:dev
-```
+<Miguel Yap - GCP cloud functions>
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+### Quarkus
+Why Quarkus?  
+<img width="773" alt="image" src="https://user-images.githubusercontent.com/1756555/192748496-47a03ce5-52ab-4f5b-9a8a-d0994ba266a9.png">
+https://www.redhat.com/files/resources/cm-quarkus-supersonic-subatomic-java-infographic-f19144-201908-en.pdf
+https://quarkus.io/vision/container-first
 
-## Packaging and running the application
 
-The application can be packaged using:
-```shell script
-./mvnw package
-```
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+Quarkus is a highly opinionated framework, whose main aim in life is to make Java apps that are lean, mean and can mix it with Go and other native compiled languages when it comes to building microservices in the sense of small footprint lightweight purpose-built applications.
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+Because of this purpose to have a minimal memory and bundle size footprint with fast startup times for instant autoscaling, they have made some quite interesting design choices that limit flexibility to achieve this performance outcome.
 
-If you want to build an _über-jar_, execute the following command:
-```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
-```
+This also leads to quite a steep learning curve. I feel like I’ve been falling in and out of love with Quarkus as I navigate the slopes of this learning curve. 
+<img width="1218" alt="image" src="https://user-images.githubusercontent.com/1756555/192747590-06570ca7-4550-4872-9912-7198f6710421.png">
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
 
-## Creating a native executable
+When wouldn’t you use Quarkus? I wouldn’t recommend taking an existing monolithic Java application and porting it to Quarkus. It’s very likely you are already using libraries and approaches that would not be compatible with their build-time optimisations and you could get quagmired in migration hassles. 
 
-You can create a native executable using: 
-```shell script
-./mvnw package -Pnative
-```
+When would you? When you want to take that same monolith and rebuild it using true microservices (maybe with a strangler pattern). Each micro service built with Quarkus would take advantage of these optimisations and be implemented using the approaches they recommend for high performance high density containerised deployments.
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
-```shell script
-./mvnw package -Pnative -Dquarkus.native.container-build=true
-```
+##### Questions
+About questions - please stop me if you have a question and we can dive into it. I will try to keep moving through the example though, so if you’re really stuck or want to work through something in detail let me know afterwards and I’m happy to stick around and work through it, or also feel free to get in touch with me after the meetup. 
 
-You can then execute your native executable with: `./target/code-with-quarkus-1.0.0-SNAPSHOT-runner`
 
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
 
-## Provided Code
-
-### RESTEasy Reactive
-
-Easily start your Reactive RESTful Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
