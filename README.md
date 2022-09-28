@@ -43,5 +43,6 @@ About questions - please stop me if you have a question and we can dive into it.
 
 #### Live Coding!
 
-Start a new repo, copy the issues from this one and have at it.
+Quick demo of the (impossible in 50 minute!) goal: http://petrace.mycodefu.com:8080/
 
+Start a new repo, copy the issues from this one and have at it.
