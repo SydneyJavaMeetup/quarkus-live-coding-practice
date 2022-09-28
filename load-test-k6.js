@@ -14,7 +14,7 @@ export const options = {
 };
 
 export default function () {
-    const url = 'ws://petrace.mycodefu.com:8080/pet-race';
+    const url = 'ws://localhost:8080/pet-race';
     const params = { };
     let messagesReceived = -2; //ignore the first two because there are two messages sent on open
     let messagesSent = 0;
