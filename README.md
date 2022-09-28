@@ -41,5 +41,7 @@ When would you? When you want to take that same monolith and rebuild it using tr
 ##### Questions
 About questions - please stop me if you have a question and we can dive into it. I will try to keep moving through the example though, so if you’re really stuck or want to work through something in detail let me know afterwards and I’m happy to stick around and work through it, or also feel free to get in touch with me after the meetup. 
 
+#### Live Coding!
 
+Start a new repo, copy the issues from this one and have at it.
 
