@@ -2,6 +2,7 @@ package meetup.sydney.java;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.model.UpdateOptions;
+import io.quarkus.logging.Log;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -29,8 +30,11 @@ public class PetRace {
 
 
     public void onChangeStream(@Observes PetVote changeStreamEvent) {
-//        System.out.println("Received change stream event from Mongo: " + changeStreamEvent);
-        broadcast("%s:%d".formatted(changeStreamEvent._id(), changeStreamEvent.votes()));
+        try {
+            broadcast("%s:%d".formatted(changeStreamEvent._id(), changeStreamEvent.votes()));
+        } catch (Exception e) {
+            Log.error("Error broadcasting from change stream: ", e);
+        }
     }
 
     /**
@@ -39,7 +43,7 @@ public class PetRace {
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
         //print a message to the console
-        System.out.printf("New connection opened %s%n", session.getId());
+        Log.info("New connection opened %s%n".formatted(session.getId()));
         sessions.put(session.getId(), session);
         mongoClient.getDatabase("SydneyJava")
                 .getCollection("petRace", PetVote.class)
@@ -68,14 +72,14 @@ public class PetRace {
     @OnClose
     public void onClose(Session session, CloseReason reason) {
         //print a message to the console
-        System.out.printf("Connection closed %s%n", session.getId());
+        Log.info("Connection closed %s%n".formatted(session.getId()));
         sessions.remove(session.getId());
     }
 
     @OnError
     public void onError(Session session, Throwable throwable) {
         //print a message to the console
-        System.out.printf("Error %s%n", throwable.getMessage());
+        Log.error("Error %s%n".formatted(throwable.getMessage()));
     }
 
     private void broadcast(String message) {
@@ -83,18 +87,16 @@ public class PetRace {
             s.getAsyncRemote().sendObject(message, result ->  {
                 if (result.getException() != null) {
                     if (result.getException().toString().equals("io.netty.channel.StacklessClosedChannelException")) {
-                        System.out.println("Error sending message (channel closed)), removing from list of sockets: " + s.getId());
+                        Log.error("Error sending message (channel closed)), removing from list of sockets: " + s.getId());
                         sessions.remove(s.getId());
                     }
                     if (result.getException().toString().equals("java.io.IOException: Connection reset by peer")) {
-                        System.out.println("Error sending message (connection reset by peer)), removing from list of sockets: " + s.getId());
+                        Log.error("Error sending message (connection reset by peer)), removing from list of sockets: " + s.getId());
                         sessions.remove(s.getId());
                     }
-                    System.out.println("Unable to send message to " + s.getId() + ": " + result.getException());
+                    Log.error("Unable to send message to " + s.getId() + ": " + result.getException());
                 }
             });
         });
     }
-
-
 }

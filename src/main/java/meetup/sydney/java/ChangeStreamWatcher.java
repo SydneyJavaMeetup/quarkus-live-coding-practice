@@ -2,7 +2,9 @@ package meetup.sydney.java;
 
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.changestream.FullDocument;
+import com.mongodb.client.model.changestream.OperationType;
 import com.mongodb.client.result.UpdateResult;
+import io.quarkus.logging.Log;
 import io.quarkus.mongodb.ChangeStreamOptions;
 import io.quarkus.mongodb.reactive.ReactiveMongoClient;
 import io.quarkus.runtime.ShutdownEvent;
@@ -47,7 +49,7 @@ public class ChangeStreamWatcher {
 
         init.subscribe()
                 .with(updateResult -> {
-                    System.out.println("Initialised collection");
+                    Log.info("Initialised collection");
                     cancellableChangeStreamSubscription =
                             reactiveMongoClient
                                     .getDatabase("SydneyJava")
@@ -56,11 +58,15 @@ public class ChangeStreamWatcher {
                                     .subscribe()
                                     .with(changeStreamDocument -> {
                                         //fire the change stream event
-                                        PetVote event = changeStreamDocument.getFullDocument();
-                                        changeStreamEvent.fire(event);
+                                        if (changeStreamDocument.getOperationType().equals(OperationType.UPDATE)) {
+                                            PetVote event = changeStreamDocument.getFullDocument();
+                                            if (event != null) {
+                                                changeStreamEvent.fire(event);
+                                            }
+                                        }
                                     }, throwable -> {
                                         //print the error to the console
-                                        System.out.println(throwable);
+                                        Log.error("Watch error", throwable);
                                     });
                 }, throwable -> {
                     System.out.println("Error initialising collection");
