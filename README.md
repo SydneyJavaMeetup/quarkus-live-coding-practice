@@ -6,7 +6,8 @@ https://www.meetup.com/sydney-java/events/286477523/
 6:30pm - Event Intro and Job Shouts.  
 6:35pm - Miguel Yap (Pet Circle) speaking about utilising Java to build cloud functions on GCP.  
 7:00pm - break.  
-7.10pm - Exploring Quarkus + MongoDB (Live-Coding) 8pm Event Finish.  
+7.15pm - Exploring Quarkus + MongoDB (Live-Coding)  
+8pm Event Finish.  
 
 ### Intro
 Ethos, vibe
