@@ -15,7 +15,6 @@ Program
 Quick acknowledgement of:
 * first meetup since pandemic (Jan 29, 2020!)
 * changes for me since the last meetup, I really value the in-person now more than ever
-* changes in the world since the last meetup - upheaval, downturns, uncertainty
 
 Ethos, vibe
 * openness
