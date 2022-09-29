@@ -13,7 +13,7 @@ https://www.meetup.com/sydney-java/events/286477523/
 Program
 
 Quick acknowledgement of:
-* first meetup since pandemic
+* first meetup since pandemic (Jan 29, 2020!)
 * changes for me since the last meetup
 * changes in the world since the last meetup - upheaval, downturns, uncertainty
 
