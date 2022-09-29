@@ -10,10 +10,18 @@ https://www.meetup.com/sydney-java/events/286477523/
 8pm Event Finish.  
 
 ### Intro
+Program
+
+Quick acknowledgement of:
+* first meetup since pandemic
+* changes for me since the last meetup
+* changes in the world since the last meetup - upheaval, downturns, uncertainty
+
 Ethos, vibe
-- openness
-- inclusiveness
-- no experts, we're a community of peers rather than a mixture of experts and novices
+* openness
+* inclusiveness
+* no experts, we're a community of peers rather than a mixture of experts and novices
+* supportiveness, we're here for each other
 
 ### Job Shouts
 “Before we get into the tech talks, are there any job shoutouts?”
