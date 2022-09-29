@@ -1,5 +1,5 @@
-# Quarkus Meetup
-#sydneyjava
+# Sydney Java Meetup #10
+https://www.meetup.com/sydney-java/events/286477523/
 
 ### Program
 6pm - Networking/Drinks/Food.  
